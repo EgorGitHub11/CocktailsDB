@@ -16,49 +16,56 @@ import { w,h } from '../constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { 
         Button} from 'react-native-elements';
-import CheckBox from 'react-native-check-box'
+import CheckBox from 'react-native-check-box';
+// Redux
+import { useSelector, useDispatch} from 'react-redux';
+import {getCategories, getFullCategories} from '../Redux/reducer';
+
 const axios = require('axios');
 const checkIcon = <Icon name="check" size={30} color="#000" />;
 
 
 import HeaderF from './uikit/FilterHeader';
-import { Context } from '../../context';
 
   function Filtered({navigation}, props) {
     const [categoriesArr, setCategoriesArr] = React.useState([]);
     const [isSelected, setIsSelected] = React.useState(false);
     const [readyCategoryNames, setReadyCategoryNames] = React.useState([])
 
-    const {getNames} = useContext(Context)
+    const categories = useSelector((state) => state.categories);
+    const fullCategories = useSelector((state) => state.fullCategories);
+    const dispatch = useDispatch();
+
+
 
     React.useEffect(() => {
-        handleGetCocktailsCategories()
+        // handleGetCocktailsCategories()
     }, [])
 
 
-    const handleGetCocktailsCategories = () => {
-        axios.get('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list')
-        .then(function (response) {
-            console.log(response.data.drinks);
-            let tempArr = response.data.drinks;
-            tempArr.map(i => {i.selected = true}) 
-            setCategoriesArr(tempArr)
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
+    // const handleGetCocktailsCategories = () => {
+    //     axios.get('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list')
+    //     .then(function (response) {
+    //         console.log(response.data.drinks);
+    //         let tempArr = response.data.drinks;
+    //         tempArr.map(i => {i.selected = true}) 
+    //         setCategoriesArr(tempArr)
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     });
+    // }
 
     const currentCategory = async(el) => {
         console.log('Было')
         console.log(el)
-        let tempArr = categoriesArr;
+        let tempArr = fullCategories;
         tempArr.map(category => {
             if (el === category){
                 category.selected = !category.selected
             } 
         })
-        setCategoriesArr(tempArr)
+        dispatch(getFullCategories(tempArr))
         setIsSelected(!isSelected)
         console.log('Стало')
         console.log(el)
@@ -66,17 +73,16 @@ import { Context } from '../../context';
 
     const createArray = () => {
         let result = []
-        categoriesArr.map((i,index) => {
+        fullCategories.map((i,index) => {
             if (i.selected === true){
                 result.push(i.strCategory)
             }
         })
-        getNames(result)
+        
+        dispatch(getCategories(result))
         navigation.goBack()
         console.log(result)
     }
-
-
 
    
     return (
@@ -88,7 +94,7 @@ import { Context } from '../../context';
 
                 <ScrollView>
                     {
-                        categoriesArr.map((el,index) => {
+                        fullCategories.map((el,index) => {
                             return(
 
                                 <CheckBox

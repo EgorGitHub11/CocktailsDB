@@ -6,20 +6,25 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './Main';
 import FilterScreen from '../Filtered_Screen/Filtered';
 
-import { Context } from '../../context'
+import { createStore } from 'redux';
+import { Provider }  from 'react-redux';
+import { rootReducer } from '../Redux/reducer'
 
+const store = createStore(rootReducer)
 
 
 const Stack = createStackNavigator();
 
 function index() {
     return (
+        <Provider store={store}>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName="Home"  screenOptions={{headerShown: false}}>
                     <Stack.Screen name="Home" component={HomeScreen} />
                     <Stack.Screen name="Filter" component={FilterScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
+        </Provider>
     )
 }
 
